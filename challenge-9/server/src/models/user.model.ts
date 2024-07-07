@@ -15,10 +15,10 @@ const UserSchema = new Schema({
         type:String,
         required:true
     },
-    room:{
+    room:[{
         type:String,
-        default:"global"
-    }
+        ref:"Room"
+    }]
 })
 
 const UserModel = model<UserI>('User',UserSchema)

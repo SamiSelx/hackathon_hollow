@@ -6,6 +6,8 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import Login from "./components/auth/login/Login";
 import useGetUser from "./hooks/useGetUser";
 import Room from "./components/room/Room";
+import Home from "./components/home/Home";
+import ChatDM from "./components/chat-DM/ChatDM";
 
 // const socket = io("https://chat-vukz.onrender.com");
 // const socket = io("http://localhost:5000");
@@ -15,6 +17,7 @@ function App() {
   const user = useGetUser()
   console.log('user from app ',user);
   const socket = useSocket();
+
   const connectSocket = () => {
     socket.on("connect", () => {
       console.log(socket);
@@ -42,12 +45,13 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={!user ? <Navigate to={"/register"} /> : <h1>Home Page</h1>}
+          element={!user ? <Navigate to={"/register"} /> : <Home/>}
         />
         <Route path="/login" element={user ? <Navigate to={'/'}/> : <Login/>} />
         <Route path="/register" element={user ? <Navigate to={'/'}/> : <Register />} />
         <Route path="/chat" element={<Chat/> }/>
         <Route path="/room" element={<Room/>} />
+        <Route path="/chatDM" element={localStorage.getItem('token') ? <ChatDM/> : <Navigate to={'/'}/>} />
       </Routes>
       
     </main>
