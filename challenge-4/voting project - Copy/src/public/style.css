@@ -6,7 +6,7 @@ body {
           justify-content: center;
           align-items: center;
           height: 100vh;
-          background-color: #ddfdff;
+          background-color: #258e96;
       }
       h2{
         text-align: center;
@@ -17,7 +17,7 @@ body {
           width: 400px;
           padding: 20px;
           border-radius: 10px;
-          background-color: rgba(159, 229, 255, 0.89);
+          background-color: white;
           box-shadow: 10px 0 10px rgba(0, 0, 0, 0.1);
       }
       .form-group {
@@ -35,32 +35,45 @@ body {
           box-sizing: border-box;
           border-style: none;
           height: 40px;
-          background-color: #c2f1fc;
+          background-color: #bec5c76a;
           
       }
       button {
           width: 50%;
           padding: 10px;
-          background-color: #007bff;
+          background-color: #258e96;
           color: white;
           border: none;
           cursor: pointer;
           border-radius: 7px;
           margin-bottom: 7px;
           margin-left: 25%;
+          text-align: center;
 
       }
       button:hover {
-          background-color: #000000;
-          border-radius: 10px;
-          transition: 1.5s ;
+          background-color: #33bdc7;;
+         box-shadow: 5px 5px #7feef6;;
+          transition: 1.2s ;
+          width: 49%;
+          
         
 
       }
 
       #role{
-        background-color: #cef4fe;
+        background-color: #bcc3c587;
         border-style: none;
         height: 30px;
-        width: 60px;
+        width: 70px;
+        border-radius: 7px;
       }
+      #vote{
+        color: rgb(55, 36, 36);
+        background-color: wheat;
+      }
+      li {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
