@@ -21,7 +21,7 @@ router.get('/',Authorization,async (req,res)=>{
         return
     } catch (error) {
         console.log(error);
-        res.status(4000).json({status:'failed',message:'failed to find users'})
+        res.status(400).json({status:'failed',message:'failed to find users'})
         return
     }
 })
