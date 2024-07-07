@@ -8,7 +8,7 @@ export default function useGetUser(){
     useEffect(()=>{
         async function getUser(token){
             try {
-                const response = await fetch('https://hackathon-hollow.onrender.com/api/user/me',{
+                const response = await fetch('http://localhost:5000/api/user/me',{
                     method:'GET',
                     headers:{
                         'content-type':'application/json',

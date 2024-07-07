@@ -2,7 +2,6 @@ import { useEffect, useState } from "react"
 import ScrollToBottom from 'react-scroll-to-bottom'
 import useUser from "../../hooks/useUser"
 import useSocket from "../../hooks/useSocket"
-import { IoCloudDownloadOutline } from "react-icons/io5";
 
 export default function ChatDM(){
     const [users,setUsers] = useState([])
@@ -11,13 +10,65 @@ export default function ChatDM(){
     const [message,setMessage] = useState({message:'',file:null})
     const {user:userSender,setUser} = useUser()
     const socket = useSocket()
-    const [selected,setSelected] = useState(false)
     const [room,setRoom] = useState('')
-    const [roomNames,setRoomNames] = useState([])
     const [isRoom,setIsRoom] = useState(false)
     // const [rommList,setRoomList] = useState([])
     
+    useEffect(()=>{
+      async function getConversation(){
+          console.log(recieverId);
+          const endpoint = isRoom ? 'room/'+recieverId :recieverId 
+          const response = await fetch('http://localhost:5000/api/message/'+endpoint,{
+              method:'GET',
+              headers:{
+                  'content-type':'application/json',
+                  'authorization':localStorage.getItem('token')
+              }
+          })
+          const data = await response.json()
+          if(response.ok){
+              console.log(data);
+              data.data ? setMessageList(data.data.messages) : setMessageList([])
+          }
+      }
+      getConversation()
+      if (userSender) {
+        console.log("joining room");
+        socket.emit("join-room", [userSender.id]);
+        socket.on("recieve-message", (message) => {
+          // const isChannel = message.senderId == recieverId;
+          // console.log("on channel ", isChannel);
+          // console.log("from recieve socket", message);
+          // console.log("from socket", userSender);
 
+          // console.log("inside socket", messageList);
+
+          // problem of listening, can't get recieveId and isRoom cuz event start on the first render so value won't change
+          const room = userSender.room.find((r) => r == message.recieverId);
+          // if(isRoom){
+          //   console.log('into room');
+          //   if(message.recieverId == recieverId) setMessageList(list => [...list,message])
+          // }else
+          if(room){
+              if(recieverId !== message.recieverId) return
+              setMessageList((list) => [...list, message]);
+          }else{
+            if ((message.recieverId == userSender.id) && (message.senderId == recieverId))
+              setMessageList((list) => [...list, message]);
+          }
+          
+      console.log('timess inside On',recieverId,room,'message is ',message)
+        });
+      }
+      console.log('timess inside real',recieverId)
+      return ()=>{
+        socket.off('recieve-message')
+      }
+      
+
+  },[socket,recieverId])
+
+  useEffect(()=> console.log('timess',recieverId),[socket,recieverId])
 
     useEffect(()=>{
         // fetch all users
@@ -35,56 +86,24 @@ export default function ChatDM(){
             }
         }
         getUsers()
-        if(userSender){
-            console.log('joining room');
-            socket.emit('join-room',[userSender.id])
-            socket.on('recieve-message',(message)=>{
-              const isChannel = message.senderId == recieverId
-              console.log('on channel ',isChannel);
-              console.log('from recieve socket', message);
-              console.log('from socket',userSender);
-              
-              console.log('inside socket' , messageList);
-              console.log(isRoom,recieverId);
-              
-              // problem of listening, can't get recieveId and isRoom cuz event start on the first render so value won't change
-              // const room = userSender.room.find(r => r == recieverId)
-                 if((message.recieverId == userSender.id) && (message.senderId == recieverId)) setMessageList(list => [...list,message])
-                //  if(isRoom){
-                //   console.log('into room');
-                //   if(message.recieverId == recieverId) setMessageList(list => [...list,message])
-                // }else
-            })
+        
+    },[socket])
+    
+    useEffect(() => {
+      if (userSender) {
+        socket.emit("join-room", userSender.room);
+      }
+    }, [userSender, socket]);
 
-            
-    }
-    },[socket,userSender,recieverId])
-    useEffect(()=>{
-        async function getConversation(){
-            console.log(recieverId);
-            const endpoint = isRoom ? 'room/'+recieverId :recieverId 
-            const response = await fetch('http://localhost:5000/api/message/'+endpoint,{
-                method:'GET',
-                headers:{
-                    'content-type':'application/json',
-                    'authorization':localStorage.getItem('token')
-                }
-            })
-            const data = await response.json()
-            if(response.ok){
-                console.log(data);
-                data.data ? setMessageList(data.data.messages) : setMessageList([])
-            }
-        }
-        getConversation()
-    },[recieverId])
     function handleReciever(e){
         console.log(e.target.id);
         setIsRoom(false)
         setRecieverId(e.target.id)
-        setSelected(true)
     }
-
+    function handleRoom(e){
+      setIsRoom(true)
+      setRecieverId(e.target.id)
+    }
     async function handleSubmit(){
         // console.log(socket.id);
         const endpoint = isRoom ? 'room/'+recieverId :recieverId 
@@ -123,6 +142,7 @@ export default function ChatDM(){
             const data = await response.json()
             console.log(data);
             if(response.ok){
+                console.log('joining room ',room);
                 setUser({...userSender,room:[...userSender.room,room]})
             }
             setRoom('')
@@ -130,7 +150,6 @@ export default function ChatDM(){
             console.log(error);
         }
 
-        console.log('joining room ',room);
       }
     //   async function createRoom(){
     //     const response = await fetch('http://localhost:5000/api/room/create',{
@@ -152,17 +171,9 @@ export default function ChatDM(){
 
     //     socket.emit("join-room",room)
     //   }
-    useEffect(()=>{
-        if(userSender){
-            socket.emit("join-room",userSender.room);
-        }
-    },[userSender,room])
+    
 
-      function handleRoom(e){
-        setIsRoom(true)
-        setRecieverId(e.target.id)
-        setSelected(true)
-      }
+      
 
     return (
       <div className="flex justify-between gap-10">
@@ -231,7 +242,7 @@ export default function ChatDM(){
               ))}
             </div>
           </ScrollToBottom>
-          {selected && (
+          {recieverId != '' && (
             <div className="border-t-2 border-black pt-4 ">
               <input
                 className="ring-2 ring-gray-500 rounded-full mr-4 px-4 py-1"

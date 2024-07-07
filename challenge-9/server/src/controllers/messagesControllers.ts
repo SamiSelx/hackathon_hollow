@@ -47,6 +47,7 @@ export const sendMessageRoom = async (req:Request,res:Response)=>{
     const {roomName} = req.params
     const senderId = req.user._id
     const {message} = req.body
+    const filePath = req.file ? `/uploads/${req.file?.filename}` : null
 
     try {
         // search if Room exist
@@ -67,7 +68,7 @@ export const sendMessageRoom = async (req:Request,res:Response)=>{
         }
 
         // create message
-        const messageCreated = await MessageModel.create({recieverId:roomName,senderId,message})
+        const messageCreated = await MessageModel.create({recieverId:roomName,senderId,message:{message,filePath}})
         // search conversation on the room
         let conversation = await ConversationModel.findOne({_id:room.conversation})
         //create conversation if conversation between them doesn't exist
