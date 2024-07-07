@@ -13,7 +13,8 @@ const apiUrl = 'http://localhost:3000/api';
                 },
                 body: JSON.stringify({ username, password, role })
             });
-
+        const data = await response.json()
+        console.log(data)
             if (response.ok) {
                 alert('User registered successfully');
             } else {
@@ -56,6 +57,7 @@ const apiUrl = 'http://localhost:3000/api';
             const candidates = await response.json();
             const candidatesList = document.getElementById('candidates-list');
             candidatesList.innerHTML = '';
+            
             candidates.forEach(candidate => {
                 const li = document.createElement('li');
                 li.textContent = `${candidate.name} (${candidate.votes} votes)`;
@@ -63,6 +65,7 @@ const apiUrl = 'http://localhost:3000/api';
                 voteButton.textContent = 'Vote';
                 voteButton.onclick = () => vote(candidate._id);
                 li.appendChild(voteButton);
+                voteButton.id='vote'
                 candidatesList.appendChild(li);
             });
         }
