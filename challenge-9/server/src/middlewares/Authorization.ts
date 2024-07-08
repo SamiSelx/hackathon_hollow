@@ -25,7 +25,7 @@ export default async function  Authorization (req:Request,res:Response,next:Next
     try {
         const verify = jwt.verify(token,process.env.SECRET_KEY!)
         const {_id} = verify as UserJwt
-        const user = await UserModel.findOne({_id}) as UserI
+        const user = await UserModel.findById(_id) as UserI
         req.user = user
         next()
     } catch (error) {

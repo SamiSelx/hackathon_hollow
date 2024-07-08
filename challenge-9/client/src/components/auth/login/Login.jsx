@@ -1,5 +1,6 @@
 import { useState } from "react"
 import useLogin from "../../../hooks/useLogin"
+import { Link } from "react-router-dom"
 
 export default function Login(){
     const [userSignIn,setUserSignIn] = useState({email:'',password:''})
@@ -41,6 +42,9 @@ export default function Login(){
         {error && (
           <div className="text-red-500 text-2xl font-semibold">{error}</div>
         )}
+        <p className="mt-4 text-end">
+        <Link to={'/register'} className="px-3 py-1 text-blue-500 font-semibold text-lg">Register</Link>
+      </p>
       </div>
     )
 }

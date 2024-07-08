@@ -4,4 +4,5 @@ export interface UserI{
     email:string;
     password:string;
     room:[];
+    isOnline:boolean;
 }

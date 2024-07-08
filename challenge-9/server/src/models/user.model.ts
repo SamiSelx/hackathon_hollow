@@ -18,7 +18,11 @@ const UserSchema = new Schema({
     room:[{
         type:String,
         ref:"Room"
-    }]
+    }],
+    isOnline:{
+        type:Boolean,
+        default:false
+    }
 })
 
 const UserModel = model<UserI>('User',UserSchema)

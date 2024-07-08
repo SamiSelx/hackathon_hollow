@@ -92,6 +92,8 @@ export const sendMessageRoom = async (req:Request,res:Response)=>{
 export const getMessages = async (req:Request,res:Response)=>{
     const {recieverId} = req.params
     const senderId = req.user._id
+    console.log('first',recieverId);
+    
 
     try {
         // search if reciever exist

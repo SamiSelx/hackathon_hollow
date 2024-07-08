@@ -9,27 +9,17 @@ import Room from "./components/room/Room";
 import Home from "./components/home/Home";
 import ChatDM from "./components/chat-DM/ChatDM";
 
-// const socket = io("https://chat-vukz.onrender.com");
-// const socket = io("http://localhost:5000");
 
 function App() {
-  // const { user } = useUser();
   const user = useGetUser()
   console.log('user from app ',user);
   const socket = useSocket();
 
-  const connectSocket = () => {
-    socket.on("connect", () => {
-      console.log(socket);
-    });
-    // socket on => on == listener async, donc a chaque fois recieve an event will handle it-
-  };
+ 
 
   useEffect(() => {
-    connectSocket();
-    // socket.on('recieved-message',msg=>setRecievedMessage(msg))
-    socket.on("test-server", (msg) => {
-      console.log(msg);
+    socket.on("connect", () => {
+      console.log("user connect connected", user);
     });
     return () => {
       socket.disconnect();

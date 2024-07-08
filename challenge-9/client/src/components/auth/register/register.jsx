@@ -1,5 +1,6 @@
 import { useState } from "react";
 import useRegister from "../../../hooks/useRegister";
+import { Link } from "react-router-dom";
 
 export default function Register() {
   const [userRegistration, setUserRegistration] = useState({
@@ -54,10 +55,13 @@ export default function Register() {
           disabled={loading}
           className="bg-blue-500 py-2 text-white font-semibold text-xl rounded-lg cursor-pointer hover:bg-blue-700 transition-all duration-500 uppercase"
         />
-      </form>
+      </form> 
       {error && (
         <div className="text-red-500 text-2xl font-semibold">{error}</div>
       )}
+      <p className="mt-4 text-end">
+        <Link to={'/login'} className="  px-3 py-1 text-blue-500 font-semibold text-lg">Login</Link>
+      </p>
     </div>
   );
 }

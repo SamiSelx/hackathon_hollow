@@ -1,10 +1,12 @@
 import { useState } from "react";
 import useUser from "./useUser";
+// import useSocket from "./useSocket";
 
 export default  function useRegistre(){
     const [loading,setLoading] = useState(false)
     const [error,setError] = useState(null)
-    const {user} = useUser()
+    const {user,setUser} = useUser()
+    // const socket = useSocket()
 
     console.log(user);
     async function register(userRegistration) {
@@ -18,13 +20,14 @@ export default  function useRegistre(){
           },
         });
         const data = await response.json();
-        console.log(data);
+        console.log('data',data);
         if(response.ok) {
             setError(null)
-            // setUser({username:userRegistration.username,email:userRegistration.email,room:'',token:data.token})
-            console.log(user);
-            window.localStorage.setItem('token',`Bearer ${data.token}`)
-            // location.pathname = '/chat'
+            setUser(data.data)
+            console.log('user',user);
+            window.localStorage.setItem('token',`Bearer ${data.data.token}`)
+            // socket.emit('online',data.data._doc._id) // send from backend user information
+            location.pathname = '/chatDM'
             console.log('gg');
         } else setError(data.message)
       } catch (error) {

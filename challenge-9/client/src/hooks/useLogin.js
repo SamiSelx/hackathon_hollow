@@ -1,8 +1,12 @@
 import { useState } from "react";
+// import useSocket from "./useSocket";
+import useUser from "./useUser";
 
 export default function useLogin(){
+    const {setUser} = useUser()
     const [loading,setLoading] = useState(false)
     const [error,setError] = useState(null)
+    // const socket = useSocket()
 
     async function login(userSignIn){
         setLoading(true)
@@ -18,9 +22,11 @@ export default function useLogin(){
             console.log(data);
             if(response.ok){
                 setError(null)
-                // setUser({username:userRegistration.username,email:userRegistration.email,token:data.token})
-                window.localStorage.setItem('token',`Bearer ${data.token}`)
-                location.pathname = '/chat'
+                console.log('user after login ',data.data);
+                setUser(data.data)
+                window.localStorage.setItem('token',`Bearer ${data.data.token}`)
+                // socket.emit('online',data.data._doc._id) // send from backend user information
+                location.pathname = '/chatDM'
                 console.log('gg');
             }else setError(data.message)
         } catch (error) {
