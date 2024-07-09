@@ -15,7 +15,7 @@ const router=express.Router();
 router.delete('/delete/:id',deleteFile)
 
 // api to update file information with endpoint
-router.route('/update').put(updateFile)
+router.route('/update/:id').put(updateFile)
 
 // api  to retrieve file information by id with endpoint.
 router.route('/retrieve/:id').get(retrieveFile)
