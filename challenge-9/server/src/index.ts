@@ -1,15 +1,19 @@
 import express from 'express'
 import cors from 'cors'
 import 'dotenv/config'
+import './configs/connectDB'
+
+// Routes
 import userRouter from './routes/userRoute'
 import messageRoute from './routes/messageRoute'
 import roomRouter from './routes/roomRoute'
-import './configs/connectDB'
+// Socket config
 import {app,httpServer} from './socket/socket'
 import path from 'path'
 const port = process.env.PORT
 
 app.use(cors())
+
 app.use('/uploads',express.static(path.join(__dirname,'/uploads')))
 // Perse Form
 app.use(express.urlencoded({extended:true}))

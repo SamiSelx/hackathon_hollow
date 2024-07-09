@@ -3,6 +3,7 @@ import UserModel from "../models/user.model"
 import MessageModel from "../models/message.model"
 import ConversationModel from "../models/conversation.model"
 import RoomModel from "../models/room.model"
+import ResponseI from "../types/response"
 
 export const sendMessage = async (req:Request,res:Response)=>{
     const {recieverId} = req.params
@@ -19,7 +20,8 @@ export const sendMessage = async (req:Request,res:Response)=>{
         console.log(exist);
         
         if(!exist){
-            res.status(400).json({status:'failed',message:"user doesn't exist"})
+            const response:ResponseI = {status:'failed',message:"user doesn't exist"}
+            res.status(400).json(response)
         }
 
         // create message
@@ -34,11 +36,13 @@ export const sendMessage = async (req:Request,res:Response)=>{
 
         await ConversationModel.updateOne({_id:conversation._id},{$push:{messages:messageCreated._id}})
         
-        
         res.status(200).json({status:'success',message:'message has been sent',data:messageCreated,filePath})
+        return
     } catch (error) {
         console.log(error);
-        res.status(400).json({status:'failed',message:'failed to send a message'})
+        const response:ResponseI = {status:'failed',message:'failed to send a message'}
+        res.status(400).json(response)
+        return
     }
 
 }
@@ -78,11 +82,14 @@ export const sendMessageRoom = async (req:Request,res:Response)=>{
 
         await ConversationModel.updateOne({_id:conversation._id},{$push:{messages:messageCreated._id}})
         await RoomModel.updateOne({roomName},{conversation:conversation._id})
-
-        res.status(200).json({status:'success',message:'message has been sent',data:messageCreated})
+        const response:ResponseI = {status:'success',message:'message has been sent',data:messageCreated}
+        res.status(200).json(response)
+        return
     } catch (error) {
         console.log(error);
-        res.status(400).json({status:'failed',message:'failed to send a message'})
+        const response:ResponseI = {status:'failed',message:'failed to send a message'}
+        res.status(400).json(response)
+        return
     }
 
 }
@@ -92,25 +99,26 @@ export const sendMessageRoom = async (req:Request,res:Response)=>{
 export const getMessages = async (req:Request,res:Response)=>{
     const {recieverId} = req.params
     const senderId = req.user._id
-    console.log('first',recieverId);
     
 
     try {
         // search if reciever exist
         const exist = await UserModel.find({_id:recieverId})
         if(!exist){
-            res.status(400).json({status:'failed',message:"user doesn't exist"})
+            const response:ResponseI = {status:'failed',message:"user doesn't exist"}
+            res.status(400).json(response)
             return
         }
 
         // Get Messages between revierver and sender
         const messages = await ConversationModel.findOne({particapate:{$all:[senderId,recieverId]}}).populate('messages')
-
-        res.status(200).json({status:'success',message:'messages found',data:messages})
+        const response:ResponseI = {status:'success',message:'messages found',data:messages}
+        res.status(200).json(response)
         return
     } catch (error) {
         console.log(error);
-        res.status(400).json({status:'failed',message:'failed to get messages'})
+        const response:ResponseI = {status:'failed',message:'failed to get messages'}
+        res.status(400).json(response)
         return
     }
 
@@ -129,10 +137,13 @@ export const getMessagesRoom = async (req:Request,res:Response)=>{
 
         // Get Messages From Room
         const messages = await ConversationModel.findOne({_id:room.conversation}).populate('messages')
-        res.status(200).json({status:'success',message:'messages found',data:messages})
+        const response:ResponseI = {status:'success',message:'messages found',data:messages}
+        res.status(200).json(response)
+        return
     } catch (error) {
         console.log(error);
-        res.status(400).json({status:'failed',message:'failed to get messages'})
+        const response:ResponseI = {status:'failed',message:'failed to get messages'}
+        res.status(400).json(response)
     }
 
 }

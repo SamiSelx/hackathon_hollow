@@ -1,6 +1,7 @@
 import { Request,Response } from "express"
 import UserModel from "../models/user.model"
 import RoomModel from "../models/room.model"
+import ResponseI from "../types/response"
 
 
 export const joinRoom = async (req:Request,res:Response)=>{
@@ -11,24 +12,27 @@ export const joinRoom = async (req:Request,res:Response)=>{
         const user = await UserModel.findOne({_id:senderId})
         const exist = user?.room.find(r=>r == roomName)
         if(exist){
-            res.status(400).json({status:'failed',message:'user already in the room'})
+            const response:ResponseI = {status:'failed',message:'user already in the room'}
+            res.status(400).json(response)
             return
         }
         const room = await RoomModel.findOne({roomName})
         if(!room){
-            res.status(400).json({status:'failed',message:"Room doesn't exist"})
+            const response:ResponseI = {status:'failed',message:"Room doesn't exist"}
+            res.status(400).json(response)
             return
         }
 
         await RoomModel.updateOne({roomName},{$push:{users:user?._id}})
         await UserModel.updateOne({_id:senderId},{$push:{room:roomName}})
-
-        res.status(200).json({status:'success',message:'joined successfully'})
+        const response:ResponseI = {status:'success',message:'joined successfully'}
+        res.status(200).json(response)
         
         
     } catch (error) {
         console.log(error);
-        res.status(400).json({status:'failed',message:'failed to join'})
+        const response:ResponseI = {status:'failed',message:'failed to join'}
+        res.status(400).json(response)
         return
     }
 }
@@ -43,18 +47,21 @@ export const createRoom = async (req:Request,res:Response)=>{
         // verify if room exist
         const room = await RoomModel.findOne({roomName})
         if(room){
-            res.status(400).json({status:'failed',message:'room is already exist'})
+            const response:ResponseI = {status:'failed',message:'room is already exist'}
+            res.status(400).json(response)
             return
         }
         
         const roomCreated = await RoomModel.create({roomName,users:[senderId]})
         await UserModel.updateOne({_id:senderId},{$push:{room:roomName}})
-        res.status(200).json({status:'success',message:'Room Created',data:roomCreated})
+        const response:ResponseI = {status:'success',message:'Room Created',data:roomCreated}
+        res.status(200).json(response)
         return
         
     } catch (error) {
         console.log(error);
-        res.status(400).json({status:'failed',message:'failed to Create'})
+        const response:ResponseI = {status:'failed',message:'failed to Create'}
+        res.status(400).json(response)
         return
     }
 }
@@ -68,13 +75,15 @@ export const getRoom = async (req:Request, res:Response) => {
   
     try {
       const room = await RoomModel.findOne({ roomName });
+      const response:ResponseI = { status: "success", message: "room found", data: room }
       res
         .status(200)
-        .json({ status: "success", message: "room found", data: room });
+        .json(response);
       return;
     } catch (error) {
       console.log(error);
-      res.status(400).json({ status: "failed", message: "room Not found" });
+      const response:ResponseI = { status: "failed", message: "room Not found" }
+      res.status(400).json(response);
       return;
     }
   }

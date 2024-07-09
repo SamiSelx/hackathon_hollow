@@ -3,6 +3,7 @@ import UserModel from "../models/user.model"
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { userValidator } from "../utils/userValidator"
+import ResponseI from "../types/response"
 
 export const login = async (req:Request,res:Response)=>{
     const {email,password} = req.body
@@ -26,11 +27,13 @@ export const login = async (req:Request,res:Response)=>{
             room:user.room,
             token
         }
-        res.status(200).json({status:'success',message:'login successfully',data:userLogin})
+        const response:ResponseI = {status:'success',message:'login successfully',data:userLogin}
+        res.status(200).json(response)
    
     } catch (error) {
         console.log(error);
-        res.status(400).json({status:'failed',message:'error'})
+        const response:ResponseI = {status:'failed',message:'error'}
+        res.status(400).json(response)
         return
     }
 
