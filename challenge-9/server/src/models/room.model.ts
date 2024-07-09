@@ -1,4 +1,5 @@
 import { Schema,model } from "mongoose";
+import { RoomI } from "../types/room";
 
 const RoomSchema = new Schema({
     roomName:{
@@ -18,6 +19,6 @@ const RoomSchema = new Schema({
     timestamps:true
 })
 
-const RoomModel = model('Room',RoomSchema)
+const RoomModel = model<RoomI>('Room',RoomSchema)
 
 export default RoomModel
