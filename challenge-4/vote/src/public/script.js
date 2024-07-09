@@ -4,7 +4,7 @@ const apiUrl = 'http://localhost:3000/api';
         async function register() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-            const role = document.getElementById('role').value;
+            const role = 'user'
 
             const response = await fetch(`${apiUrl}/auth/register`, {
                 method: 'POST',
@@ -60,7 +60,7 @@ const apiUrl = 'http://localhost:3000/api';
             
             candidates.forEach(candidate => {
                 const li = document.createElement('li');
-                li.textContent = `${candidate.name} (${candidate.votes} votes)`;
+                li.textContent = `${candidate.username} (${candidate.votes} votes)`;
                 const voteButton = document.createElement('button');
                 voteButton.textContent = 'Vote';
                 voteButton.onclick = () => vote(candidate._id);

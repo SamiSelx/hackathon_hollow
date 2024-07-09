@@ -24,14 +24,25 @@ const logg=async (req, res) => {
     try {
         const user = await User.findOne({ username });
         if (!user) return res.status(400).send('User not found');
-
-        const isMatch = await bcrypt.compare(password, user.password);
+        
+//when we creat in data base the admin we don't hash the password 
+        if(user.role==='user'){
+            const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).send('Invalid credentials');
-
+        }
+        
         const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.status(200).json({ token });
-        console.log('the token :');
+        
+        if(user.role==='user'){
+            console.log('the user token');
+            console.log(token)
+        }
+        else{
+        console.log('the admin token:');
         console.log(token)
+        }
+       
     } catch (error) {
         res.status(500).send(error.message);
     }
