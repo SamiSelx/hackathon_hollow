@@ -3,7 +3,7 @@ const createResponse = require("../models/endpointMsg");
 const fs=require('fs');
 const { Storage } = require('@google-cloud/storage');
 require('dotenv').config();
-
+const path=require('path')
 //Handle file upload and save file details to the database.
 const uploadFile=  async (req, res) => {
           try {
@@ -43,15 +43,38 @@ const deleteFile= async(req,res)=>{
         res.status(400).json({ error: error.message });
     }
 }
-const updateFile=async(req,res)=>{
-    const updates = req.body;
-
+const updateFile = async (req, res) => {
     try {
-        const File = await FileModel.findByIdAndUpdate(req.params.id, updates, { new: true });
+        const updates = req.body;
+        const file = req.file;
+
+        // Find the file record to update
+        const File = await FileModel.findById(req.params.id);
         if (!File) {
-            return res.status(404).json(createResponse('err', File, 'File update err.'))
+            return res.status(404).json(createResponse('err', {}, 'File not found.'));
         }
-        res.json(createResponse('success', File, 'File update successfully.'));
+
+        //  handle file replacement
+        if (file) {
+            // Delete the old file from the file system
+            fs.unlinkSync(File.path);
+
+            // Update the file details
+           const File= await FileModel.create({
+                name :file.originalname,
+                size : file.size,
+               mime_type : file.mimetype,
+                path : file.path,
+                description : updates.description
+    
+
+            })
+            
+        }
+
+        await File.save();
+
+        res.json(createResponse('success', File, 'File updated successfully.'));
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
