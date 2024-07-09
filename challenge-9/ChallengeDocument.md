@@ -31,4 +31,3 @@ i just did a frontend with status of user Offline or online also can logout and 
 
 - I added user can be leave the room after creating it or joining that room
 
-- I added an authentication system to the application.
