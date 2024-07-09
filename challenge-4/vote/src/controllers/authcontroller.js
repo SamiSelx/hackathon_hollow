@@ -13,7 +13,7 @@ const register=async (req, res) => {
 
               res.status(201).json({status:"success",message:"user registred",user})
           } catch (error) {
-              res.status(400).send(error.message);
+              res.status(400).json({status:'failed',message:error.message});
           }
       }
     
@@ -23,12 +23,12 @@ const logg=async (req, res) => {
 
     try {
         const user = await User.findOne({ username });
-        if (!user) return res.status(400).send('User not found');
+        if (!user) return res.status(400).json('User not found');
         
 //when we creat in data base the admin we don't hash the password 
         if(user.role==='user'){
             const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).send('Invalid credentials');
+        if (!isMatch) return res.status(400).json({status:'failed',message:'Invalid credentials'});
         }
         
         const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
@@ -44,7 +44,7 @@ const logg=async (req, res) => {
         }
        
     } catch (error) {
-        res.status(500).send(error.message);
+        res.status(500).json({status:'failed',message:error.message});
     }
 }
 

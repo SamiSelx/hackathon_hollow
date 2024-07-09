@@ -27,7 +27,7 @@ app.use((req, res, next) => {
 // Log errors
 app.use((err, req, res, next) => {
     logger.error(err.message);
-    res.status(500).send('Something went wrong');
+    res.status(500).json({status:'failed',message:'Something went wrong'});
 });
 
 const authRoutes = require('./routes/auth');
