@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        nav a {
+            margin-right: 20px;
+            text-decoration: none;
+            color: #007BFF;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome Hollow Knight!</h1>
+    <nav>
+        <a href="http://localhost:3000/auth/login">Login</a>
+        <a href="http://localhost:3000/auth/sign-up">Sign-up</a>
+        <button id="create-form">Create Form</button>
+    </nav>
+    <h2>Lorem ipsum dolor sit.</h2>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Temporibus dignissimos rerum accusamus accusantium nemo minus cumque! Ad dolores sunt repellat placeat ipsa non, ut aliquid amet, qui iure commodi officiis!
+    Repellat excepturi aperiam quam quis tenetur, praesentium enim architecto porro maxime eveniet commodi quo obcaecati voluptas tempora accusantium unde dicta eaque rerum nesciunt accusamus animi. Quisquam, odio! Suscipit, corrupti ab!
+    Amet obcaecati fuga soluta veritatis necessitatibus aperiam numquam facere ea officiis cumque enim aliquam iusto eius quae aspernatur cupiditate distinctio, excepturi sunt reiciendis! In quam aliquam blanditiis aut natus cum!
+    </p>
+
+    <script>
+        // Function to get a cookie by name
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        document.getElementById('create-form').addEventListener('click', async () => {
+            const token = getCookie('jwt');
+            console.log(token);
+                try {
+                const response = await fetch('http://localhost:3000/forms/create', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`  // Add token to the Authorization header
+                    },
+                    credentials: 'include'  // Ensure cookies are sent with the request
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Form Create Response:', data);
+                    location.assign('http://localhost:3000/forms/create')
+                } else {
+                    // Handle different response statuses
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    } else {
+                        location.assign('http://localhost:3000/forms/create')
+                    }
+                }
+            } catch (err) {
+                console.error('Fetch Error:', err);
+                location.assign('http://localhost:3000/forms/create')
+            }
+        })
+    </script>
+</body>
+</html>

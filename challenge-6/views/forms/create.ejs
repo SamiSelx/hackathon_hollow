@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Creator</title>
+    <style>
+        /* styles.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+h1 {
+    text-align: center;
+}
+
+button {
+    display: block;
+    margin: 10px auto;
+}
+
+.question {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.options-container {
+    margin-top: 10px;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+}
+
+.option input[type="text"] {
+    margin-right: 10px;
+}
+
+    </style>
+</head>
+<body>
+    <h1>Form Creator</h1>
+    <label for="form-title">Form Title: </label>
+    <input type="text" id="form-title">
+    <button id="add-question-btn">Add Question</button>
+    <form id="form-container"></form>
+    <button id="save-form-btn">Save Form</button>
+
+    <script>
+        // scripts.js
+        
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+        
+        const token = getCookie('jwt');
+        console.log('Token:', token);
+        
+        let questions = [];
+        
+        document.getElementById('add-question-btn').addEventListener('click', addQuestion);
+        document.getElementById('save-form-btn').addEventListener('click', saveForm);
+        
+        function addQuestion() {
+            const formContainer = document.getElementById('form-container');
+        
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+        
+            const questionLabel = document.createElement('label');
+            questionLabel.textContent = 'Question: ';
+            questionDiv.appendChild(questionLabel);
+        
+            const questionInput = document.createElement('input');
+            questionInput.type = 'text';
+            questionDiv.appendChild(questionInput);
+        
+            const typeLabel = document.createElement('label');
+            typeLabel.textContent = ' Answer Type: ';
+            questionDiv.appendChild(typeLabel);
+        
+            const select = document.createElement('select');
+            select.innerHTML = `
+                <option value="text">Text Answer</option>
+                <option value="single-choice">Single Choice</option>
+                <option value="multi-choice">Multiple Choice</option>
+            `;
+            select.addEventListener('change', function() {
+                handleAnswerTypeChange(questionDiv, select.value);
+            });
+            questionDiv.appendChild(select);
+        
+            const answerContainer = document.createElement('div');
+            answerContainer.className = 'answer-container';
+            questionDiv.appendChild(answerContainer);
+        
+            // Always include correct answer field
+            const correctAnswerLabel = document.createElement('label');
+            correctAnswerLabel.textContent = ' Correct Answer: ';
+            answerContainer.appendChild(correctAnswerLabel);
+        
+            const correctAnswerInput = document.createElement('input');
+            correctAnswerInput.type = 'text';
+            correctAnswerInput.className = 'correct-answer';
+            answerContainer.appendChild(correctAnswerInput);
+        
+            formContainer.appendChild(questionDiv);
+        }
+        
+        function handleAnswerTypeChange(questionDiv, type) {
+            const answerContainer = questionDiv.querySelector('.answer-container');
+            // Clear previous fields
+            while (answerContainer.childElementCount > 2) {
+                answerContainer.removeChild(answerContainer.lastChild);
+            }
+        
+            if (type === 'text') {
+                const userResponseLabel = document.createElement('label');
+                userResponseLabel.textContent = 'User Response: ';
+                answerContainer.appendChild(userResponseLabel);
+        
+                const userResponseInput = document.createElement('input');
+                userResponseInput.type = 'text';
+                answerContainer.appendChild(userResponseInput);
+        
+            } else if (type === 'single-choice' || type === 'multi-choice') {
+                const addOptionBtn = document.createElement('button');
+                addOptionBtn.type = 'button';
+                addOptionBtn.textContent = 'Add Option';
+                addOptionBtn.addEventListener('click', function() {
+                    addOption(answerContainer, type);
+                });
+                answerContainer.appendChild(addOptionBtn);
+        
+                const optionsContainer = document.createElement('div');
+                optionsContainer.className = 'options-container';
+                answerContainer.appendChild(optionsContainer);
+            }
+        }
+        
+        function addOption(container, type) {
+            const optionsContainer = container.querySelector('.options-container');
+        
+            const optionDiv = document.createElement('div');
+            optionDiv.className = 'option';
+        
+            const optionInput = document.createElement('input');
+            optionInput.type = 'text';
+            optionDiv.appendChild(optionInput);
+        
+            optionsContainer.appendChild(optionDiv);
+        }
+        
+        function saveForm() {
+            const formTitle = document.getElementById('form-title').value;
+            const questionElements = document.querySelectorAll('.question');
+            questions = [];
+        
+            questionElements.forEach(questionElement => {
+                const questionText = questionElement.querySelector('input[type="text"]').value;
+                const answerType = questionElement.querySelector('select').value;
+                const answerContainer = questionElement.querySelector('.answer-container');
+        
+                const correctAnswer = answerContainer.querySelector('.correct-answer').value;
+                let options = [];
+        
+                if (answerType === 'single-choice' || answerType === 'multi-choice') {
+                    const optionInputs = answerContainer.querySelectorAll('.option input[type="text"]');
+                    optionInputs.forEach(optionInput => {
+                        if (optionInput.value.trim()) {
+                            options.push(optionInput.value);
+                        }
+                    });
+                    console.log(options)
+                }
+        
+                questions.push({
+                    questionText,
+                    answerType,
+                    correctAnswer,
+                    options
+                });
+            });
+        
+            const formData = {
+                title: formTitle,
+                questions
+            };
+            console.log('Form Data:', formData); // For debugging
+        
+            fetch('http://localhost:3000/forms/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(formData),
+                credentials: 'include'  // Ensure cookies are sent with the request
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Form saved successfully:', data);
+                location.assign('http://localhost:3000/');  // Redirect to home page on success
+            })
+            .catch(error => {
+                console.error('Error saving form:', error);
+            });
+        }
+        </script>
+        
+    
+</body>
+</html>

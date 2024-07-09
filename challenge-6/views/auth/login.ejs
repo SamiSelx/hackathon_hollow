@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+  
+    form {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 300px;
+    }
+  
+    form h2 {
+      margin-bottom: 20px;
+      color: #333333;
+    }
+  
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #666666;
+    }
+  
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #dddddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+  
+    .error {
+      color: #e74c3c;
+      margin-bottom: 10px;
+      display: none;
+    }
+  
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #3498db;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  
+    button:hover {
+      background-color: #2980b9;
+    }
+  </style>
+  <title>Document</title>
+</head>
+<body>
+  <form id="login-form" method="post">
+    <h2>Login</h2>
+    <label for="email">Email</label>
+    <input type="text" name="email" required />
+    <div class="email error">Invalid email</div>
+    <label for="password">Password</label>
+    <input type="password" name="password" required />
+    <div class="password error">Incorrect password</div>
+    <button type="submit">Login</button>
+  </form>
+  <script>
+    const form = document.querySelector('form');
+const emailError = document.querySelector('.email.error');
+const passwordError = document.querySelector('.password.error');
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  // Reset errors
+  emailError.textContent = '';
+  passwordError.textContent = '';
+
+  // Get values
+  const email = form.email.value;
+  const password = form.password.value;
+
+  try {
+    const res = await fetch('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      // Store token in localStorage
+      localStorage.setItem('jwt', data.token);
+
+      // Redirect to the home page
+      location.assign('http://localhost:3000/');
+    } else {
+      emailError.textContent = data.message || 'Login failed';
+    }
+  } catch (err) {
+    console.error('Fetch error:', err);
+  }
+});
+
+  </script>
+</body>
+</html>
+
+
+
+
+
