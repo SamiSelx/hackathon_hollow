@@ -86,4 +86,36 @@ export const getRoom = async (req:Request, res:Response) => {
       res.status(400).json(response);
       return;
     }
-  }
+}
+
+export const leaveRoom = async (req:Request,res:Response)=> {
+    const {roomName} = req.body
+    const senderId = req.user._id
+
+    try {
+        const user = await UserModel.findOne({_id:senderId})
+        const exist = user?.room.find(r=> r == roomName)
+        if(!exist){
+            const response:ResponseI = {status:'failed',message:"room doesn't exist"}
+            res.status(400).json(response)
+            return
+        }
+        if(user?.room){
+            user.room = user?.room.filter(r=> r != roomName)
+            user?.save()
+            await RoomModel.findOneAndUpdate({roomName},{$pull:{users:senderId}})
+            const response:ResponseI = {status:'success',message:"user is out the room"}
+            res.status(200).json(response)
+            return
+        }else{
+            const response:ResponseI = {status:'failed',message:"room doesn't exist"}
+            res.status(400).json(response)
+            return
+        }
+    } catch (error) {
+        console.log(error);
+        const response:ResponseI = {status:'failed',message:"error"}
+        res.status(400).json(response)
+        return
+    }
+}

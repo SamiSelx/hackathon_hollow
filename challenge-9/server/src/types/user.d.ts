@@ -3,6 +3,5 @@ export interface UserI{
     username:string;
     email:string;
     password:string;
-    room:[];
-    isOnline:boolean;
+    room:string[];
 }

@@ -1,5 +1,5 @@
 import express from "express";
-import { joinRoom,createRoom,getRoom } from "../controllers/roomControllers";
+import { joinRoom,createRoom,getRoom, leaveRoom } from "../controllers/roomControllers";
 import Authorization from "../middlewares/authorization";
 const router = express.Router();
 
@@ -9,6 +9,8 @@ router.post('/join',Authorization,joinRoom)
 
 //create room
 router.post('/create',Authorization,createRoom)
+
+router.post('/leave',Authorization,leaveRoom)
 
 router.get("/:roomName", getRoom);
 
