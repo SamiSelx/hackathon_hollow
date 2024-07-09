@@ -7,12 +7,12 @@ import UserModel from '../models/user.model'
 import multer from 'multer'
 const router = express.Router()
 
-
+// Config Upload Files 
 const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
+    destination: function (_req, _file, cb) {
       cb(null, './src/uploads')
     },
-    filename: function (req, file, cb) {
+    filename: function (_req, file, cb) {
       const uniqueSuffix = Date.now()
       cb(null, uniqueSuffix + file.originalname)
     }
@@ -24,12 +24,5 @@ router.get('/:recieverId',Authorization,getMessages)
 router.post('/send/room/:roomName',Authorization,upload.single('file'),sendMessageRoom)
 router.get('/room/:roomName',Authorization,getMessagesRoom)
 
-
-router.delete('/',async (req,res)=>{
-    await MessageModel.deleteMany({})
-    await ConversationModel.deleteMany({})
-    await UserModel.deleteMany({})
-    res.sendStatus(200)
-})
 
 export default router

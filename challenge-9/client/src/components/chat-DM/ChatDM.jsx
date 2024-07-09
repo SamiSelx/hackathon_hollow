@@ -82,7 +82,6 @@ export default function ChatDM(){
               console.log(error);
             }
         }
-        
         getUsers()
         // if(userSender) socket.emit('online',userSender.id)  
         // socket.on('status-user',user=>{
@@ -92,20 +91,16 @@ export default function ChatDM(){
         // socket.on('disconnect',()=>{
         //   socket.emit('offline',userSender.id)
         // })
-        
-    },[socket,userSender])
+        if (userSender) {
+          socket.emit("join-room", userSender.room);
+          socket.emit('addOnlineUser',userSender.id)
+        }
+        socket.on('getOnlineUsers',users=>{
+          console.log('online users',users);
+          setOnlineUsers(users)
+        })
+    },[userSender,socket])
     
-    useEffect(() => {
-      if (userSender) {
-        socket.emit("join-room", userSender.room);
-        socket.emit('addOnlineUser',userSender.id)
-      }
-      socket.on('getOnlineUsers',users=>{
-        console.log('online users',users);
-        setOnlineUsers(users)
-      })
-    }, [userSender, socket]);
-
     function handleReciever(e,name){
         setChatName(name)
         setIsRoom(false)
@@ -119,8 +114,8 @@ export default function ChatDM(){
       setIsSelected(true)
     }
     async function handleSubmit(){
-        const endpoint = isRoom ? 'room/'+recieverId :recieverId 
-        if(message.message == "" && !message.file) return
+          const endpoint = isRoom ? 'room/'+recieverId :recieverId 
+          if(message.message == "" && !message.file) return
         const formData = new FormData()
         formData.append('message',message.message)
         formData.append('file',message.file)

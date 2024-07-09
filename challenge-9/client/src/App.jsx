@@ -1,11 +1,9 @@
 import { useEffect } from "react";
-import Chat from "./components/chat/Chat";
 import Register from "./components/auth/register/register";
 import useSocket from "./hooks/useSocket";
 import { Navigate, Route, Routes } from "react-router-dom";
 import Login from "./components/auth/login/Login";
 import useGetUser from "./hooks/useGetUser";
-import Room from "./components/room/Room";
 import Home from "./components/home/Home";
 import ChatDM from "./components/chat-DM/ChatDM";
 
@@ -39,8 +37,6 @@ function App() {
         />
         <Route path="/login" element={user ? <Navigate to={'/'}/> : <Login/>} />
         <Route path="/register" element={user ? <Navigate to={'/'}/> : <Register />} />
-        <Route path="/chat" element={<Chat/> }/>
-        <Route path="/room" element={<Room/>} />
         <Route path="/chatDM" element={localStorage.getItem('token') ? <ChatDM/> : <Navigate to={'/'}/>} />
       </Routes>
       

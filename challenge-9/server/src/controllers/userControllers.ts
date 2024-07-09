@@ -1,14 +1,17 @@
 import { Request, Response } from "express";
 import UserModel from "../models/user.model";
+import ResponseI from "../types/response";
 
 export const getAllUsers = async (_req:Request,res:Response)=>{
     try {
         const users = await UserModel.find({})
-        res.status(200).json({status:'success',message:'fetching users with success',data:users})
+        const response:ResponseI = {status:'success',message:'fetching users with success',data:users}
+        res.status(200).json(response)
         return
     } catch (error) {
         console.log(error);
-        res.status(400).json({status:'failed',message:'failed to find users'})
+        const response:ResponseI = {status:'failed',message:'failed to find users'}
+        res.status(400).json(response)
         return
     }
 }
@@ -20,8 +23,9 @@ export const getUser = (req:Request,res:Response)=>{
         email:req.user?.email,
         room:req.user.room
     }
+    const response:ResponseI = {status:'success',message:'User is authorized',data:user}
     
-    res.status(200).json({status:'success',message:'User is authorized',data:user})
+    res.status(200).json(response)
 }
 
 export const updateUser = async (req:Request,res:Response)=>{
@@ -30,13 +34,13 @@ export const updateUser = async (req:Request,res:Response)=>{
     
    try {
     const updateUser = await UserModel.updateOne({_id:req.user._id},{room:room})
-    console.log(updateUser);
-    
-    res.status(200).json({status:'success',message:'updated successfully'})
+    const response:ResponseI = {status:'success',message:'updated successfully'}
+    res.status(200).json(response)
     return
    } catch (error) {
     console.log(error);
-    res.status(400).json({status:'failed',message:'error'})
+    const response:ResponseI = {status:'failed',message:'error'}
+    res.status(400).json(response)
     return
    }
 }

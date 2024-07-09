@@ -2,6 +2,7 @@ import { Request,Response,NextFunction } from "express"
 import jwt from "jsonwebtoken"
 import UserModel from "../models/user.model"
 import { UserI } from "../types/user"
+import ResponseI from "../types/response"
 
 type UserJwt = {
     _id:string
@@ -18,7 +19,8 @@ declare global{
 export default async function  Authorization (req:Request,res:Response,next:NextFunction){
     const token = req.headers.authorization?.split(' ')[1]
     if(!token){
-        res.status(401).json({status:'failed',message:'Not Authorized'})
+        const response:ResponseI = {status:'failed',message:'Not Authorized'}
+        res.status(401).json(response)
         return
     }
 
@@ -29,7 +31,8 @@ export default async function  Authorization (req:Request,res:Response,next:Next
         req.user = user
         next()
     } catch (error) {
-        res.status(400).json({status:'failed',message:'token invalid'})
+        const response:ResponseI = {status:'failed',message:'token invalid'}
+        res.status(400).json(response)
         return
     }
 
