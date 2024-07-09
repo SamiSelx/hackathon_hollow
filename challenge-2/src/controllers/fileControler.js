@@ -3,7 +3,10 @@ const createResponse = require("../models/endpointMsg");
 const fs=require('fs');
 const { Storage } = require('@google-cloud/storage');
 require('dotenv').config();
-const path=require('path')
+const path = require('path');
+const multer = require('multer');
+
+
 //Handle file upload and save file details to the database.
 const uploadFile=  async (req, res) => {
           try {
@@ -43,33 +46,35 @@ const deleteFile= async(req,res)=>{
         res.status(400).json({ error: error.message });
     }
 }
+
+
 const updateFile = async (req, res) => {
     try {
         const updates = req.body;
         const file = req.file;
+       console.log(updates)
+       console.log(file)
 
         // Find the file record to update
         const File = await FileModel.findById(req.params.id);
         if (!File) {
-            return res.status(404).json(createResponse('err', {}, 'File not found.'));
+            return res.status(404).json(createResponse('err', null, 'File not found.'));
         }
-
-        //  handle file replacement
+  console.log(File)
+        // Handle file replacement
         if (file) {
             // Delete the old file from the file system
             fs.unlinkSync(File.path);
 
             // Update the file details
-           const File= await FileModel.create({
-                name :file.originalname,
-                size : file.size,
-               mime_type : file.mimetype,
-                path : file.path,
-                description : updates.description
-    
+            File.name = file.originalname;
+            File.size = file.size;
+            File.mime_type = file.mimetype;
+            File.path = file.path;
+        }
 
-            })
-            
+        if (updates.description) {
+            File.description = updates.description;
         }
 
         await File.save();
@@ -79,6 +84,7 @@ const updateFile = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 }
+
 const retrieveFile=async(req,res)=>{
     try {
         const File = await FileModel.findById(req.params.id);
