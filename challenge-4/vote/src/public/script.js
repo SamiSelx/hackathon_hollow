@@ -58,7 +58,7 @@ const apiUrl = 'http://localhost:3000/api';
             const candidatesList = document.getElementById('candidates-list');
             candidatesList.innerHTML = '';
             
-            candidates.forEach(candidate => {
+            candidates.message.forEach(candidate => {
                 const li = document.createElement('li');
                 li.textContent = `${candidate.username} (${candidate.votes} votes)`;
                 const voteButton = document.createElement('button');
