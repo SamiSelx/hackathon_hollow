@@ -14,8 +14,7 @@ const router=express.Router();
 // api  to delete file by id with endpoint
 router.delete('/delete/:id',deleteFile)
 
-// api to update file information with endpoint
-router.route('/update/:id').put(updateFile)
+
 
 // api  to retrieve file information by id with endpoint.
 router.route('/retrieve/:id').get(retrieveFile)
@@ -41,6 +40,9 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage })
 // api to upload files with endpoint
 router.route('/upload').post(upload.single('file'),uploadFile);
+
+// api to update file information with endpoint
+router.route('/update/:id').put(upload.single('file'),updateFile)
 
 
 //the second api upload files using googleCloud
