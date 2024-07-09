@@ -168,6 +168,31 @@ export default function ChatDM(){
         }
 
       }
+      
+      async function leaveRoom(e){
+        try {
+          const response = await fetch('http://localhost:5000/api/room/leave',{
+            method:'POST',
+            body:JSON.stringify({roomName:room}),
+            headers:{
+              'content-type':'application/json',
+              'authorization':localStorage.getItem('token')
+            }
+          })
+          const data = await response.json()
+          console.log(data);
+          if(response.ok){
+            const userRoom = userSender.room.filter(r=> r !== room)
+            setUser({...userSender,room:userRoom})
+            setErrorRoom(null)
+          }else{
+            setErrorRoom(data.message)
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
       if(!userSender) <Navigate to={'/'}/>
     return (
       <div className="container mx-auto px-4 flex justify-center  gap-10">
@@ -287,6 +312,9 @@ export default function ChatDM(){
             </button>
             <button className="px-4 py-2 bg-green-500 hover:bg-green-600 transition-all duration-500 text-white text-lg rounded-full" id="join" onClick={(e) => createAndJoinRoom(e)}>
               Join
+            </button>
+            <button className="px-4 py-2 bg-red-500 hover:bg-red-600 transition-all duration-500 text-white text-lg rounded-full" id="leave" onClick={(e) => leaveRoom(e)}>
+              Leave
             </button>
           </div>
         </div>

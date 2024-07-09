@@ -6,12 +6,14 @@ import Login from "./components/auth/login/Login";
 import useGetUser from "./hooks/useGetUser";
 import Home from "./components/home/Home";
 import ChatDM from "./components/chat-DM/ChatDM";
-
+import { Link } from "react-router-dom";
+import useLogout from "./hooks/useLogout";
 
 function App() {
   const user = useGetUser()
   console.log('user from app ',user);
   const socket = useSocket();
+  const logout = useLogout()
 
  
 
@@ -29,6 +31,17 @@ function App() {
 
   return (
     <main className="min-h-screen flex justify-center flex-col gap-8 items-center">
+      <div className="flex justify-between items-center">
+        <p className="font-semibold text-xl text-blue-500">CHAT APP</p>
+        <div className="container mx-auto px-4 flex-1">
+          {!user ? (
+            <>
+              <Link to={'/register'} className="  px-3 py-1 text-blue-500 font-semibold text-lg">Register</Link>
+              <Link to={'/login'} className="  px-3 py-1 text-blue-500 font-semibold text-lg">Login</Link>
+            </>
+          ): <Link onClick={logout} to={'/login'}>LogOut</Link>}
+        </div>
+      </div>
       <h1 className="text-4xl font-semibold">Chatting !!</h1>
       <Routes>
         <Route
